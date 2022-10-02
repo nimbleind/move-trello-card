@@ -38,7 +38,11 @@ function moveCardWhenPullRequestClose(apiKey, apiToken) {
         .forEach(card => {
 
           putCard(apiKey, apiToken, card.id, destinationListId);
-          addBuildComment(apiKey, apiToken, card.id, prNumber);
+
+          // open post PR comment if this is a PR open
+          if (github.context.payload.action == 'opened') {
+            addPRComment(apiKey, apiToken, card.id, prNumber);
+          }
         });
     }
     start();
@@ -74,10 +78,13 @@ function putCard(apiKey, apiToken, cardId, destinationListId) {
     });
 }
 
-function addBuildComment(apiKey, apiToken, cardId, prNumber) {
+function addPRComment(apiKey, apiToken, cardId, prNumber) {
+  const repoPath = process.env['GITHUB_ACTION_REPOSITORY'];
+  const repoURL = `https://github.com/${repoPath}`;
+  const prURL = `${repoURL}/pull/${prNumber}`;
   const options = {
     method: 'POST',
-    url: `https://api.trello.com/1/cards/${cardId}/actions/comments?key=${apiKey}&token=${apiToken}&text=PR number: ${prNumber}`,
+    url: `https://api.trello.com/1/cards/${cardId}/actions/comments?key=${apiKey}&token=${apiToken}&text=PR: ${prURL}`,
   }
   return new Promise(function(resolve, reject) {
     request(options)
