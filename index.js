@@ -27,24 +27,25 @@ function moveCardWhenPullRequestClose(apiKey, apiToken) {
     const bigstring = title + littlestring + body;
     const start = async () => {
         const listOfIds = unique(Array.from(matchAll(bigstring, /#(\d+)/g).toArray(), m => +m));
-      
+
         if (listOfIds.length == 0) return;
-    
+
         let cards = [];
-    
+
         for (item of exitLists) {
             const newCards = await getCardsOfList(apiKey, apiToken, item);
             cards = [...cards, ...newCards];
         }
-        
+
         cards
             .filter(card => listOfIds.includes(card.idShort))
             .forEach(card => {
                 putCard(apiKey, apiToken, card.id, destinationListId);
-                addBuildComment(apiKey, apiToken, card.id, buildNumber); 
+                // Not very helpful
+                // addBuildComment(apiKey, apiToken, card.id, buildNumber);
             });
       }
-      start();  
+      start();
 }
 
 function getCardsOfList(apiKey, apiToken, listId) {
