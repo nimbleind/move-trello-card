@@ -25,20 +25,20 @@ function moveCardWhenPullRequestClose(apiKey, apiToken) {
     const title = github.context.payload.pull_request.title
     const littlestring = ' ';
     const bigstring = title + littlestring + body;
-    
+
     const start = async () => {
       const listOfIds = unique(Array.from(matchAll(bigstring, /#(\d+)/g).toArray(), m => +m));
-    
+
       if (listOfIds.length == 0) return;
-      
+
       const cards = await getCardsOfList(apiKey, apiToken, departureListId);
-      
+
       cards
         .filter(el => listOfIds.includes(el.idShort))
         .forEach(card => {
-    
+
           putCard(apiKey, apiToken, card.id, destinationListId);
-          addBuildComment(apiKey, apiToken, card.id, buildNumber); 
+          addBuildComment(apiKey, apiToken, card.id, buildNumber);
         });
     }
     start();
