@@ -20,7 +20,7 @@ try {
 function moveCardWhenPullRequestClose(apiKey, apiToken) {
     const departureListId = process.env['TRELLO_DEPARTURE_LIST_ID'];
     const destinationListId = process.env['TRELLO_DESTINATION_LIST_ID'];
-    const buildNumber = process.env['GITHUB_RUN_NUMBER'];
+    const prNumber = github.context.issue.number;
     const body = github.context.payload.pull_request.body
     const title = github.context.payload.pull_request.title
     const littlestring = ' ';
@@ -38,7 +38,7 @@ function moveCardWhenPullRequestClose(apiKey, apiToken) {
         .forEach(card => {
 
           putCard(apiKey, apiToken, card.id, destinationListId);
-          addBuildComment(apiKey, apiToken, card.id, buildNumber);
+          addBuildComment(apiKey, apiToken, card.id, prNumber);
         });
     }
     start();
@@ -74,10 +74,10 @@ function putCard(apiKey, apiToken, cardId, destinationListId) {
     });
 }
 
-function addBuildComment(apiKey, apiToken, cardId, buildNumber) {
+function addBuildComment(apiKey, apiToken, cardId, prNumber) {
   const options = {
     method: 'POST',
-    url: `https://api.trello.com/1/cards/${cardId}/actions/comments?key=${apiKey}&token=${apiToken}&text=Build number: ${buildNumber}`,
+    url: `https://api.trello.com/1/cards/${cardId}/actions/comments?key=${apiKey}&token=${apiToken}&text=PR number: ${prNumber}`,
   }
   return new Promise(function(resolve, reject) {
     request(options)
