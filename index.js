@@ -79,7 +79,7 @@ function putCard(apiKey, apiToken, cardId, destinationListId) {
 }
 
 function addPRComment(apiKey, apiToken, cardId, prNumber) {
-  const repoPath = process.env['GITHUB_ACTION_REPOSITORY'];
+  const repoPath = process.env['GITHUB_REPOSITORY'];
   const repoURL = `https://github.com/${repoPath}`;
   const prURL = `${repoURL}/pull/${prNumber}`;
   const options = {
